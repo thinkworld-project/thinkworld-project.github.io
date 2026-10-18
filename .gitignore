@@ -1,0 +1,5 @@
+.DS_Store
+__pycache__/
+*.pyc
+# raw research outputs never go in this repo (see tools/build_assets.py)
+raw/
