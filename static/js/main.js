@@ -173,16 +173,6 @@
     tip: `<b>${d.name}</b><br>p50 ${d.p50} ms · p95 ${d.p95} ms<br>peak memory ${d.mem} GiB` })),
   { unit: ' ms', labelW: 140, w: 470, valFmt: (r) => Math.round(r.v), colorOf: (r) => (r.ours ? 'var(--ours)' : 'var(--neutral-bar)'), note: 'p50 latency per call, H100, batch 1' });
 
-  // Ablation
-  (function () {
-    const rows = R.ablation.rows;
-    hbar('#chart-ablation', rows.map((r, i) => ({ label: r.name, v: r.v[5], ours: r.ours,
-      delta: i ? r.v[5] - rows[i - 1].v[5] : null })),
-    { max: 60, labelW: 190, w: 560, rowH: 34,
-      valFmt: (r) => r.v.toFixed(1) + (r.delta != null ? `  (+${r.delta.toFixed(1)})` : ''),
-      colorOf: (r) => (r.ours ? 'var(--ours)' : 'var(--neutral-bar)'), note: 'LIBERO-PRO average success (%)' });
-  })();
-
   /* ---------------------------------------------------------------- tables */
   function rankCols(rows, getVals) {
     const n = getVals(rows[0]).length;
@@ -235,7 +225,6 @@
         ...r.v.map((v, c) => cell(v, c, rk))))));
     box.append(t);
   }
-  simpleTable('#table-ablation', R.ablation.cols, R.ablation.rows, { first: 'Variant' });
 
   /* ---------------------------------------------------------------- CoD effect on future prediction (Table 2) */
   (function codChart() {
