@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,13 +11,13 @@
   <meta property="og:image" content="static/images/figures/teaser_og.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#111410">
   <script>
-    // Apply the saved (or system) day/night theme before first paint to avoid a flash.
+    // Dark by default; a theme the visitor picked with the toggle is kept. Runs before first paint.
     (function () {
       var t = null;
       try { t = localStorage.getItem('tw-theme'); } catch (e) {}
-      if (!t) t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (t !== 'light' && t !== 'dark') t = 'dark';
       document.documentElement.setAttribute('data-theme', t);
     })();
   </script>

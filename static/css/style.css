@@ -13,7 +13,7 @@
 
 /* Palette: NVIDIA-style leaf green on warm "paper" neutrals (sage grays, vivid greens,
    lime highlights on dark), modelled on the Recova project page. Two themes:
-   light (default) and dark, switched by <html data-theme="dark">. */
+   light and dark (the page default), switched by <html data-theme="dark">. */
 :root {
   color-scheme: light;
   --bg: #ffffff;            /* white */

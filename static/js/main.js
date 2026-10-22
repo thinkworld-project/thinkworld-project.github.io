@@ -77,7 +77,7 @@
       if (meta) meta.setAttribute('content', t === 'dark' ? '#111410' : '#ffffff');
       if (btn) btn.setAttribute('aria-pressed', String(t === 'dark'));
     };
-    apply(root.getAttribute('data-theme') || 'light');
+    apply(root.getAttribute('data-theme') || 'dark');
     if (btn) btn.addEventListener('click', () => {
       const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       apply(next);

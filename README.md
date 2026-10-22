@@ -26,7 +26,7 @@ Search for `TODO(R4)` in `index.html`. Placeholder blocks have a dashed yellow o
 
 ## Fonts and colors
 
-The page uses an NVIDIA-style leaf-green palette (vivid greens on a white background with neutral gray panels; lime accents on a dark green-black background in night mode) and the **NVIDIA Sans** typeface, self-hosted from `static/fonts/` (WOFF, regular / italic / medium / bold). All colors are CSS variables at the top of `static/css/style.css`: `:root` for day mode and `html[data-theme="dark"]` for night mode.
+The page uses an NVIDIA-style leaf-green palette (vivid greens on a white background with neutral gray panels; lime accents on a dark green-black background in night mode) and the **NVIDIA Sans** typeface, self-hosted from `static/fonts/` (WOFF, regular / italic / medium / bold). All colors are CSS variables at the top of `static/css/style.css`: `:root` for day mode and `html[data-theme="dark"]` for night mode. Night mode is the default; a visitor's choice from the day/night toggle is remembered.
 
 The day/night toggle sits in the top-right corner of the nav bar. The first visit follows the visitor's system setting; after that, the choice is remembered in `localStorage`.
 
