@@ -15,6 +15,9 @@ Usage (from the repo root):
     # rebuild only some parts
     python3 tools/build_assets.py ... --only future_pred,attention
 
+    # only the skill-composition videos (oven + drawer); keeps the rest of data_videos.js
+    python3 tools/build_assets.py ... --only skill --skip-existing
+
 Requirements: Python 3.9+, Pillow (with WebP), numpy, ffmpeg, pdftocairo
 (poppler). Nothing else.
 """
@@ -253,6 +256,112 @@ def build_closed_loop(a):
 
 
 # --------------------------------------------------------------------------- videos
+# Drawer skill composition: atomic skills in page order (upper row, then lower row; codes are
+# drawer_1/<code>__LR), and the composite rollouts (task string in rollout.json -> tab label).
+DRAWER_ATOMIC = ['openU', 'pnpLU', 'pnpRU', 'closeU', 'openD', 'pnpLD', 'pnpRD', 'closeD']
+DRAWER_ROLLOUTS = [
+    ('open the upper drawer, put the left object in the upper drawer, then close the upper drawer',
+     'upper: open → put-L → close'),
+    ('open the upper drawer, put the right object in the upper drawer, then close the upper drawer',
+     'upper: open → put-R → close'),
+    ('open the lower drawer, put the left object in the lower drawer, then close the lower drawer',
+     'lower: open → put-L → close'),
+]
+
+
+def skill_jobs(a):
+    """Encode jobs + metadata for the skill-composition sets (oven, drawer)."""
+    vd, jobs = a.video_dir, []
+    # Skill composition (Fig. 4 / 10), one set per scene. Each set has the atomic robot skills
+    # (the only robot training data), one ThinkWorld rollout per composite task and, where
+    # recorded, the egocentric human demo of the same composite task.
+    # Oven: rollouts are both from the same 50k checkpoint.
+    skill_sel = {
+        'human': ['233844_55a8e3c5', '234724_680c22a1'],     # open→close, open→put-L→close
+        'atomic': None,                                         # all four
+        'rollout': ['212830_80946f50', '213045_13fd4dcc'],   # open→close, open→put-L→close
+    }
+    groups = [('1_human_demos', 'human', 'raw_camera_ego.mp4'),
+              ('2_atomic_robot_skills', 'atomic', 'raw_camera_top.mp4'),
+              ('3_combined_rollouts_success', 'rollout', 'raw_camera_top.mp4')]
+    oven = {}
+    for g, key, cam in groups:
+        lst = []
+        folders = sorted(glob.glob(os.path.join(vd, 'skill_composition', g, '*')))
+        if skill_sel[key]:
+            folders = [next(f for f in folders if f.endswith(e)) for e in skill_sel[key]]
+        for i, folder in enumerate(folders):
+            info = json.load(open(os.path.join(folder, 'info.json')))
+            entry = {'label': info.get('label'), 'task': info.get('task'), 'episode': info.get('episode')}
+            stem = os.path.join(VID, 'skill', 'oven', f'{key}_{i + 1}')
+            jobs.append((entry, 'dur', os.path.join(folder, cam), stem + '.mp4', 854, 28))
+            lst.append(entry)
+        oven[key] = lst
+
+    # Drawer: atomic teleop skills (fig_dir/drawer_1, table layout "LR") and successful
+    # ThinkWorld rollouts (fig_dir/drawer_policy_success_rollouts).
+    drawer = {'human': [], 'atomic': [], 'rollout': []}
+    droot = os.path.join(a.fig_dir, 'drawer_1')
+    if os.path.isdir(droot):
+        tmap = json.load(open(os.path.join(droot, 'task_map.json')))
+        for i, code in enumerate(DRAWER_ATOMIC):
+            folder = sorted(glob.glob(os.path.join(droot, f'{code}__LR', 'episode_*')))[0]
+            rel = os.path.relpath(folder, droot)
+            entry = {'label': tmap[rel]['task'], 'task': tmap[rel]['task'], 'episode': os.path.basename(folder)}
+            jobs.append((entry, 'dur', os.path.join(folder, 'camera_top-images-rgb.mp4'),
+                         os.path.join(VID, 'skill', 'drawer', f'atomic_{i + 1}.mp4'), 854, 28))
+            drawer['atomic'].append(entry)
+        rolls = glob.glob(os.path.join(a.fig_dir, 'drawer_policy_success_rollouts', 'thinkworld-*', '*', 'episode_*'))
+        rolls = {json.load(open(os.path.join(f, 'rollout.json')))['task']: f for f in rolls}
+        for i, (task, label) in enumerate(DRAWER_ROLLOUTS):
+            folder = rolls[task]
+            entry = {'label': label, 'task': task, 'episode': os.path.basename(folder)}
+            jobs.append((entry, 'dur', os.path.join(folder, 'camera_top-images-rgb.mp4'),
+                         os.path.join(VID, 'skill', 'drawer', f'rollout_{i + 1}.mp4'), 854, 28))
+            drawer['rollout'].append(entry)
+        # egocentric human demo of the same composite task (fig_dir/ego_video_drawer); the
+        # first episode on disk per task is used
+        eroot = os.path.join(a.fig_dir, 'ego_video_drawer')
+        emap = json.load(open(os.path.join(eroot, 'task_map.json'))) if os.path.isdir(eroot) else {}
+        for i, (task, label) in enumerate(DRAWER_ROLLOUTS):
+            rels = sorted(r for r, v in emap.items() if v['task'] == task and os.path.isdir(os.path.join(eroot, r)))
+            if not rels:
+                continue
+            entry = {'label': label, 'task': task, 'episode': os.path.basename(rels[0]), 'n': i + 1}
+            jobs.append((entry, 'dur', os.path.join(eroot, rels[0], 'camera_ego-images-rgb.mp4'),
+                         os.path.join(VID, 'skill', 'drawer', f'human_{i + 1}.mp4'), 854, 28))
+            drawer['human'].append(entry)
+    return jobs, {'oven': oven, 'drawer': drawer}
+
+
+def run_jobs(a, jobs):
+    def run(j):
+        entry, k, src, dst, w, crf, *rest = j
+        extra_vf = rest[0] if rest else None
+        # The poster is written only after a successful encode, so its presence
+        # means the mp4 is complete (an interrupted run leaves no poster).
+        if a.skip_existing and os.path.exists(dst) and os.path.exists(dst[:-4] + '.webp'):
+            entry[k] = float(sh(['ffprobe', '-v', 'error', '-show_entries', 'format=duration',
+                                 '-of', 'csv=p=0', dst]).strip())
+        else:
+            entry[k] = encode(src, dst, w, crf, extra_vf=extra_vf)
+        return dst
+
+    with ThreadPoolExecutor(a.jobs) as ex:
+        for d in ex.map(run, jobs):
+            print('  video', os.path.relpath(d, ROOT))
+
+
+def build_skill(a):
+    """Rebuild only the skill-composition videos and patch VIDEOS.skill in data_videos.js."""
+    path = os.path.join(JS, 'data_videos.js')
+    txt = open(path).read()
+    meta = json.loads(txt[txt.index('=') + 1:].strip().rstrip(';'))
+    jobs, meta['skill'] = skill_jobs(a)
+    run_jobs(a, jobs)
+    write_js('data_videos.js', 'VIDEOS', meta)
+
+
 def build_videos(a):
     vd = a.video_dir
     jobs, meta = [], {'real_robot': {}, 'skill': {}, 'demos': {}}
@@ -274,28 +383,8 @@ def build_videos(a):
                 jobs.append((entry, 'dur', os.path.join(folder, 'raw_camera_top.mp4'), stem + '.mp4', 854, 28,
                              f'setpts={slow}*PTS' if slow else None))
 
-    # Skill composition (Fig. 4 / 10): one human demo + one robot rollout per scenario,
-    # plus the four atomic skills. Rollouts are both from the same 50k checkpoint.
-    skill_sel = {
-        'human': ['233844_55a8e3c5', '234724_680c22a1'],     # open→close, open→put-L→close
-        'atomic': None,                                         # all four
-        'rollout': ['212830_80946f50', '213045_13fd4dcc'],   # open→close, open→put-L→close
-    }
-    groups = [('1_human_demos', 'human', 'raw_camera_ego.mp4'),
-              ('2_atomic_robot_skills', 'atomic', 'raw_camera_top.mp4'),
-              ('3_combined_rollouts_success', 'rollout', 'raw_camera_top.mp4')]
-    for g, key, cam in groups:
-        lst = []
-        folders = sorted(glob.glob(os.path.join(vd, 'skill_composition', g, '*')))
-        if skill_sel[key]:
-            folders = [next(f for f in folders if f.endswith(e)) for e in skill_sel[key]]
-        for i, folder in enumerate(folders):
-            info = json.load(open(os.path.join(folder, 'info.json')))
-            entry = {'label': info.get('label'), 'task': info.get('task'), 'episode': info.get('episode')}
-            stem = os.path.join(VID, 'skill', f'{key}_{i + 1}')
-            jobs.append((entry, 'dur', os.path.join(folder, cam), stem + '.mp4', 854, 28))
-            lst.append(entry)
-        meta['skill'][key] = lst
+    sj, meta['skill'] = skill_jobs(a)
+    jobs += sj
 
     # Teleop training demos (Fig. 9a)
     for t_src, t_key in TASKS:
@@ -307,21 +396,7 @@ def build_videos(a):
             lst.append(entry)
         meta['demos'][t_key] = lst
 
-    def run(j):
-        entry, k, src, dst, w, crf, *rest = j
-        extra_vf = rest[0] if rest else None
-        # The poster is written only after a successful encode, so its presence
-        # means the mp4 is complete (an interrupted run leaves no poster).
-        if a.skip_existing and os.path.exists(dst) and os.path.exists(dst[:-4] + '.webp'):
-            entry[k] = float(sh(['ffprobe', '-v', 'error', '-show_entries', 'format=duration',
-                                 '-of', 'csv=p=0', dst]).strip())
-        else:
-            entry[k] = encode(src, dst, w, crf, extra_vf=extra_vf)
-        return dst
-
-    with ThreadPoolExecutor(a.jobs) as ex:
-        for d in ex.map(run, jobs):
-            print('  video', os.path.relpath(d, ROOT))
+    run_jobs(a, jobs)
     write_js('data_videos.js', 'VIDEOS', meta)
 
 
@@ -378,7 +453,7 @@ def build_data_mosaic(a):
 
 
 PARTS = {'figures': build_figures, 'future_pred': build_future_pred, 'attention': build_attention,
-         'closed_loop': build_closed_loop, 'videos': build_videos,
+         'closed_loop': build_closed_loop, 'videos': build_videos, 'skill': build_skill,
          'mosaic': build_data_mosaic}
 
 

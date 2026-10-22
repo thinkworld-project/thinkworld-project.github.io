@@ -147,60 +147,157 @@ window.VIDEOS = {
   }
  },
  "skill": {
-  "human": [
-   {
-    "label": "open → close",
-    "task": null,
-    "episode": "episode_233844_55a8e3c5",
-    "dur": 10.4
-   },
-   {
-    "label": "open → put-L → close",
-    "task": null,
-    "episode": "episode_234724_680c22a1",
-    "dur": 13.4
-   }
-  ],
-  "atomic": [
-   {
-    "label": "open the oven",
-    "task": null,
-    "episode": "episode_002659_0f744959",
-    "dur": 14.734
-   },
-   {
-    "label": "put the left object in the oven",
-    "task": null,
-    "episode": "episode_215441_c265fd42",
-    "dur": 15.867
-   },
-   {
-    "label": "put the right object in the oven",
-    "task": null,
-    "episode": "episode_221120_66c92e43",
-    "dur": 18.967
-   },
-   {
-    "label": "close the oven",
-    "task": null,
-    "episode": "episode_222830_a4241dc1",
-    "dur": 16.2
-   }
-  ],
-  "rollout": [
-   {
-    "label": "open → close",
-    "task": "open the oven, then close the oven",
-    "episode": "episode_212830_80946f50",
-    "dur": 69.234
-   },
-   {
-    "label": "open → put-L → close",
-    "task": "open the oven, put the left object in the oven, then close the oven",
-    "episode": "episode_213045_13fd4dcc",
-    "dur": 98.434
-   }
-  ]
+  "oven": {
+   "human": [
+    {
+     "label": "open → close",
+     "task": null,
+     "episode": "episode_233844_55a8e3c5",
+     "dur": 10.4
+    },
+    {
+     "label": "open → put-L → close",
+     "task": null,
+     "episode": "episode_234724_680c22a1",
+     "dur": 13.4
+    }
+   ],
+   "atomic": [
+    {
+     "label": "open the oven",
+     "task": null,
+     "episode": "episode_002659_0f744959",
+     "dur": 14.734
+    },
+    {
+     "label": "put the left object in the oven",
+     "task": null,
+     "episode": "episode_215441_c265fd42",
+     "dur": 15.867
+    },
+    {
+     "label": "put the right object in the oven",
+     "task": null,
+     "episode": "episode_221120_66c92e43",
+     "dur": 18.967
+    },
+    {
+     "label": "close the oven",
+     "task": null,
+     "episode": "episode_222830_a4241dc1",
+     "dur": 16.2
+    }
+   ],
+   "rollout": [
+    {
+     "label": "open → close",
+     "task": "open the oven, then close the oven",
+     "episode": "episode_212830_80946f50",
+     "dur": 69.234
+    },
+    {
+     "label": "open → put-L → close",
+     "task": "open the oven, put the left object in the oven, then close the oven",
+     "episode": "episode_213045_13fd4dcc",
+     "dur": 98.434
+    }
+   ]
+  },
+  "drawer": {
+   "human": [
+    {
+     "label": "upper: open → put-L → close",
+     "task": "open the upper drawer, put the left object in the upper drawer, then close the upper drawer",
+     "episode": "episode_032551_5955c1a9",
+     "n": 1,
+     "dur": 15.03
+    },
+    {
+     "label": "upper: open → put-R → close",
+     "task": "open the upper drawer, put the right object in the upper drawer, then close the upper drawer",
+     "episode": "episode_032855_c0a16c78",
+     "n": 2,
+     "dur": 15.0
+    },
+    {
+     "label": "lower: open → put-L → close",
+     "task": "open the lower drawer, put the left object in the lower drawer, then close the lower drawer",
+     "episode": "episode_033319_95f97304",
+     "n": 3,
+     "dur": 15.07
+    }
+   ],
+   "atomic": [
+    {
+     "label": "open the upper drawer",
+     "task": "open the upper drawer",
+     "episode": "episode_011348_193caf79",
+     "dur": 20.167
+    },
+    {
+     "label": "put the left object in the upper drawer",
+     "task": "put the left object in the upper drawer",
+     "episode": "episode_230613_4f5e9d06",
+     "dur": 20.067
+    },
+    {
+     "label": "put the right object in the upper drawer",
+     "task": "put the right object in the upper drawer",
+     "episode": "episode_234750_b5e3376f",
+     "dur": 21.3
+    },
+    {
+     "label": "close the upper drawer",
+     "task": "close the upper drawer",
+     "episode": "episode_021045_a72cfe3a",
+     "dur": 13.067
+    },
+    {
+     "label": "open the lower drawer",
+     "task": "open the lower drawer",
+     "episode": "episode_013353_f6d7331f",
+     "dur": 21.2
+    },
+    {
+     "label": "put the left object in the lower drawer",
+     "task": "put the left object in the lower drawer",
+     "episode": "episode_001600_7fd65365",
+     "dur": 22.867
+    },
+    {
+     "label": "put the right object in the lower drawer",
+     "task": "put the right object in the lower drawer",
+     "episode": "episode_004601_465a5651",
+     "dur": 18.334
+    },
+    {
+     "label": "close the lower drawer",
+     "task": "close the lower drawer",
+     "episode": "episode_022457_bcd5139e",
+     "dur": 13.0
+    }
+   ],
+   "rollout": [
+    {
+     "label": "upper: open → put-L → close",
+     "task": "open the upper drawer, put the left object in the upper drawer, then close the upper drawer",
+     "episode": "episode_210853_3e4959be",
+     "dur": 100.834
+    },
+    {
+     "label": "upper: open → put-R → close",
+     "task": "open the upper drawer, put the right object in the upper drawer, then close the upper drawer",
+     "episode": "episode_210604_1882cac9",
+     "dur": 105.567
+    },
+    {
+     "label": "lower: open → put-L → close",
+     "task": "open the lower drawer, put the left object in the lower drawer, then close the lower drawer",
+     "episode": "episode_211439_fec72411",
+     "dur": 84.667
+    }
+   ]
+  }
  },
  "demos": {
   "color": [

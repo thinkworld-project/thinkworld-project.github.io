@@ -376,13 +376,17 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 .atomic .item { opacity: .45; transition: opacity .25s, transform .25s; }
 .atomic .item.used { opacity: 1; }
 .atomic .item .vtile { border-radius: 9px; }
-.atomic .item .cap { display: flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600; margin-top: 6px; color: var(--ink-2); }
+.atomic .item .cap { display: flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 13.5px; font-weight: 600; margin-top: 6px; color: var(--ink-2); }
 .atomic .item .desc { font-size: 12.5px; color: var(--muted); margin: 1px 0 0 27px; line-height: 1.35; }
 .atomic .item .step {
   min-width: 20px; height: 20px; border-radius: 50%; background: var(--panel-2); color: var(--muted);
   display: grid; place-items: center; font-size: 11.5px; font-weight: 700;
 }
 .atomic .item.used .step { background: var(--accent); color: var(--on-accent); }
+.atomic .item .cap .tag { font-size: 11px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; line-height: 17px; }
+.video-placeholder.small { gap: 4px; }
+.video-placeholder.small strong { font-size: 16px; }
+.video-placeholder.small span { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: #b6ed77; }
 .seq { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-weight: 650; font-size: 14px; }
 .seq span { background: var(--accent-4); color: var(--accent-ink); border-radius: 6px; padding: 2px 9px; }
 .seq em { color: var(--muted); font-style: normal; }

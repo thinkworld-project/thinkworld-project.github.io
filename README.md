@@ -98,6 +98,7 @@ Video settings: top camera only, H.264 CRF 28, 854 px wide, no audio, faststart.
 | Attention gallery | `cherrypicked_attention_examples_unfiltered_n24/` (Stage-3 overlays; RoboCOIN 2–3 excluded via `ATTN_EXCLUDE`) |
 | Closed-loop viewer | `figure_videos/closed_loop_future_pca/20260920_stage3_2k_long_rollout_post_interaction_suite/visualizations_rowwise_actual_only_pca/simplerenv/` |
 | Rollout comparison | `figure_videos/rr_task_pages_videos/` (the episodes used in appendix Fig. 9) |
-| Skill composition | `figure_videos/skill_composition/` (one human demo + one rollout per task) |
+| Skill composition — oven | `figure_videos/skill_composition/` (one human demo + one rollout per task) |
+| Skill composition — drawer | `thinkworld_fig/drawer_1/` (atomic skills), `thinkworld_fig/ego_video_drawer/` (human demos) and `thinkworld_fig/drawer_policy_success_rollouts/` (rollouts). Rebuild with `--only skill` |
 | Training demos | `figure_videos/training_demos/` |
 | Training-data mosaic | `thinkworld_video_examples_2/`, `DROID_RoboCOIN_RT1_representative_60_samples/`; EgoDex and BC-Z tiles cycle through the 4-second sample clips in `egodex_bcz_sample_videos/` (`DATA_SAMPLES`) |

@@ -448,42 +448,73 @@
   (function skill() {
     const S = window.VIDEOS && window.VIDEOS.skill;
     if (!S) return;
-    const ATOMIC = [
-      { key: 'open', short: 'OPEN', i: 1 }, { key: 'putL', short: 'PUT-L', i: 2 },
-      { key: 'putR', short: 'PUT-R', i: 3 }, { key: 'close', short: 'CLOSE', i: 4 }];
-    // One human demo and one verified robot rollout per composite task.
-    const SCEN = [
-      { label: 'open → close', human: 1, rollout: 1, uses: ['open', 'close'] },
-      { label: 'open → put-L → close', human: 2, rollout: 2, uses: ['open', 'putL', 'close'] }];
-    let cur = 0;
+    // One set per scene. Atomic skills are listed in data order (videos skill/<set>/atomic_<n>);
+    // each scenario has one verified ThinkWorld rollout and, if recorded, the human demo of the same task.
+    const SETS = [
+      { key: 'oven', name: 'Oven',
+        atomic: [{ key: 'open', short: 'OPEN' }, { key: 'putL', short: 'PUT-L' }, { key: 'putR', short: 'PUT-R' },
+          { key: 'close', short: 'CLOSE' }],
+        scen: [{ human: 1, rollout: 1, uses: ['open', 'close'] },
+          { human: 2, rollout: 2, uses: ['open', 'putL', 'close'] }] },
+      { key: 'drawer', name: 'Drawer',
+        atomic: [{ key: 'openU', short: 'OPEN', tag: 'upper' }, { key: 'putLU', short: 'PUT-L', tag: 'upper' },
+          { key: 'putRU', short: 'PUT-R', tag: 'upper' }, { key: 'closeU', short: 'CLOSE', tag: 'upper' },
+          { key: 'openD', short: 'OPEN', tag: 'lower' }, { key: 'putLD', short: 'PUT-L', tag: 'lower' },
+          { key: 'putRD', short: 'PUT-R', tag: 'lower' }, { key: 'closeD', short: 'CLOSE', tag: 'lower' }],
+        scen: [{ human: 1, rollout: 1, uses: ['openU', 'putLU', 'closeU'] },
+          { human: 2, rollout: 2, uses: ['openU', 'putRU', 'closeU'] },
+          { human: 3, rollout: 3, uses: ['openD', 'putLD', 'closeD'] }] },
+    ].filter((st) => S[st.key]);
+    const st = { set: 0, cur: 0 };
+    const vid = (set, name) => `static/videos/skill/${set}/${name}.mp4`;
+    const poster = (src) => src.replace('.mp4', '.webp');
+
+    const setSeg = $('#skill-set');
     const tabs = $('#skill-tabs');
-    SCEN.forEach((sc, i) => tabs.append(h('button', { class: 'tab' + (i === 0 ? ' on' : ''),
-      onclick: (e) => { cur = i; $$('.tab', tabs).forEach((b) => b.classList.toggle('on', b === e.currentTarget)); render(); } },
-    sc.label)));
-
-    // atomic row
     const atomicBox = $('#skill-atomic');
-    const atomicItems = ATOMIC.map((a) => {
-      const src = `static/videos/skill/atomic_${a.i}.mp4`;
-      const step = h('span', { class: 'step' }, '');
-      const item = h('div', { class: 'item' },
-        h('div', { class: 'vtile' }, lazyVideo(src, { poster: src.replace('.mp4', '.webp'), rate: 1.5 })),
-        h('div', { class: 'cap' }, step, a.short),
-        h('div', { class: 'desc' }, S.atomic[a.i - 1] ? S.atomic[a.i - 1].label : ''));
-      atomicBox.append(item);
-      return { a, item, step };
-    });
-
     const humanBox = $('#skill-human');
     const robotBox = $('#skill-robot');
+    let atomicItems = [];
+    SETS.forEach((set, i) => setSeg.append(h('button', { class: i === 0 ? 'on' : '', type: 'button',
+      onclick: (e) => { st.set = i; st.cur = 0; $$('button', setSeg).forEach((b) => b.classList.toggle('on', b === e.currentTarget)); build(); } },
+    set.name)));
+
+    // tabs + atomic row for the selected set
+    function build() {
+      const set = SETS[st.set], D = S[set.key];
+      tabs.innerHTML = '';
+      set.scen.forEach((sc, i) => tabs.append(h('button', { class: 'tab' + (i === st.cur ? ' on' : ''),
+        onclick: (e) => { st.cur = i; $$('.tab', tabs).forEach((b) => b.classList.toggle('on', b === e.currentTarget)); render(); } },
+      (D.rollout[sc.rollout - 1] || {}).label || `Task ${i + 1}`)));
+      atomicBox.innerHTML = '';
+      atomicItems = set.atomic.map((a, i) => {
+        const src = vid(set.key, `atomic_${i + 1}`);
+        const step = h('span', { class: 'step' }, '');
+        const item = h('div', { class: 'item' },
+          h('div', { class: 'vtile' }, lazyVideo(src, { poster: poster(src), rate: 1.5 })),
+          h('div', { class: 'cap' }, step, a.short, a.tag ? h('span', { class: 'tag' }, a.tag) : ''),
+          h('div', { class: 'desc' }, D.atomic[i] ? D.atomic[i].label : ''));
+        atomicBox.append(item);
+        return { a, item, step };
+      });
+      render();
+    }
+
     function render() {
-      const sc = SCEN[cur];
+      const set = SETS[st.set], D = S[set.key], sc = set.scen[st.cur];
+      const roll = D.rollout[sc.rollout - 1] || {};
+      $('#skill-instr').textContent = roll.task ? `“${roll.task.charAt(0).toUpperCase() + roll.task.slice(1)}.”` : '';
       humanBox.innerHTML = ''; robotBox.innerHTML = '';
-      const hs = `static/videos/skill/human_${sc.human}.mp4`;
-      humanBox.append(lazyVideo(hs, { poster: hs.replace('.mp4', '.webp') }),
-        h('span', { class: 'name' }, sc.label));
-      const rs = `static/videos/skill/rollout_${sc.rollout}.mp4`;
-      robotBox.append(lazyVideo(rs, { poster: rs.replace('.mp4', '.webp'), rate: 2 }),
+      if (sc.human) {
+        const hs = vid(set.key, `human_${sc.human}`);
+        humanBox.append(lazyVideo(hs, { poster: poster(hs) }), h('span', { class: 'name' }, roll.label || ''));
+      } else {
+        // human demo of this task not released yet
+        humanBox.append(h('div', { class: 'video-placeholder small' },
+          h('strong', {}, 'Human demonstration'), h('span', {}, 'coming soon')));
+      }
+      const rs = vid(set.key, `rollout_${sc.rollout}`);
+      robotBox.append(lazyVideo(rs, { poster: poster(rs), rate: 2 }),
         h('span', { class: 'name' }, 'ThinkWorld'), h('span', { class: 'time' }, '2×'),
         h('span', { class: 'result success' }, '✓ Full task'));
       atomicItems.forEach(({ a, item, step }) => {
@@ -492,7 +523,7 @@
         step.textContent = k >= 0 ? k + 1 : '–';
       });
     }
-    render();
+    build();
   })();
 
   /* ---------------------------------------------------------------- future-prediction viewer */
