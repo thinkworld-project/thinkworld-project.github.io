@@ -1004,3 +1004,46 @@ html[data-theme="dark"] .logo .dk { display: block; }
 .fw.fa-go .fw-pulse { opacity: 1; animation-duration: .45s; }
 .ar-rp { transition: box-shadow .45s ease, filter .45s ease; }
 .ar-rp.fa-glow { filter: brightness(1.04); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent), 0 14px 30px -18px var(--accent); }
+
+/* ------------------------------------------------------------------ method figure on phones */
+/* phones: keep the original scale and stack each stage: the model first, then its detail boxes
+   below it (stage a: reasoning space, future imagination; stage b: world imagination reward) */
+@media (max-width: 720px) {
+  #flow-arch .flow-view { margin: 0 -10px; }   /* use the page gutters for the figure */
+  .flow-canvas.ar { min-width: 0; padding: 12px 8px 14px; }
+  .ar-row, .ar-row.b { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .ar-sh { font-size: 15.5px; }
+  /* slimmer tokens / labels so the model column fits a phone width */
+  .ar-model .tk { gap: 2px; }
+  .ar-model .tk i { width: 12px; }
+  .ar-model .tk.act i, .ar-model .tk.noise i { width: 16px; }
+  .ar-model .tk.qry i { width: 10px; }
+  .ar-model .tk em { font-size: 11px; padding: 0; }
+  .ar-model .ar-ics .gi { width: 24px; height: 24px; }
+  .ar-model .ar-lab { font-size: 11px; }
+  .ar-model .ar-lab.m { font-size: 14px; }
+  .ar-model .ar-pan { padding: 7px 5px 4px; gap: 0 4px; }
+  .ar-model .trap { min-width: 54px; padding: 5px 10px 6px; font-size: 12px; }
+  .ar-top { gap: 0 3px; }
+  .ar-in { grid-template-columns: 16fr 7fr 5.6fr 6.2fr; gap: 0 5px; }
+  .ar-it > span { font-size: 10.5px; white-space: normal; text-align: center; line-height: 1.2; }
+  .ar-vlm > span { font-size: 20px; }
+  .ar-dec > span:first-child { font-size: 14.5px; }
+  .ar-dec.off > span:first-child { margin-right: 18px; }
+  .ar-dec .frz { right: 4px; width: 18px; height: 18px; margin-top: -9px; }
+  /* world imagination reward: narrower columns, smaller rollout tokens */
+  .ar-rp.wir { padding: 8px 6px 20px; }
+  .ar-wg { grid-template-columns: 50px auto 12px 48px 26px 48px; }
+  .ar-vid { margin-right: 4px; }
+  .ar-vid span { font-size: 10.5px; white-space: normal; text-align: center; line-height: 1.15; }
+  .ar-roll { grid-template-columns: 12px auto; gap: 3px; }
+  .ar-rl { font-size: 10px; }
+  .ar-rows { padding-left: 4px; }
+  .ar-wg .tk { gap: 2px; }
+  .ar-wg .tk.num.sm i { min-width: 16px; height: 15px; padding: 0 1px; font-size: 7px; border-radius: 4px; }
+  .ar-best { gap: 2px; padding: 1px 2px; }
+  .ar-best .aw { width: 15px; height: 15px; }
+  .ar-vd { padding-left: 20px; }
+  .ar-z { font-size: 15px; }
+  .ar-zcap { font-size: 10.5px; white-space: normal; }
+}
