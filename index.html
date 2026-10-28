@@ -21,6 +21,8 @@
       document.documentElement.setAttribute('data-theme', t);
     })();
   </script>
+  <!-- arXiv icon: Academicons (SIL OFL 1.1) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
@@ -67,12 +69,12 @@
       <span class="logo kaist"><img class="lt" src="static/images/logos/kaist_ai.png" alt="KAIST Graduate School of AI"><img class="dk" src="static/images/logos/kaist_ai_dark.png" alt="KAIST Graduate School of AI"></span>
     </div>
 
-    <!-- TODO(R4): links. Replace href="#" and remove class "soon" for each live link. -->
+    <!-- Links. For Code / Model: set href and remove class "soon" once live. -->
     <div class="links">
-      <a class="btn soon" href="#" aria-disabled="true">
+      <a class="btn" href="https://arxiv.org/pdf/2610.37666" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Paper</a>
-      <a class="btn soon" href="#" aria-disabled="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8l8 8M16 8l-8 8"/></svg>arXiv</a>
+      <a class="btn" href="https://arxiv.org/abs/2610.37666" target="_blank" rel="noopener">
+        <i class="ai ai-arxiv" aria-hidden="true"></i>arXiv</a>
       <a class="btn soon" href="#" aria-disabled="true">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a10.9 10.9 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.7 5.38-5.27 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>Code</a>
       <a class="btn soon" href="#" aria-disabled="true">
@@ -358,12 +360,11 @@
   <div class="wrap">
     <div class="eyebrow">Citation</div>
     <h2>BibTeX</h2>
-    <!-- TODO(R4): replace with the final BibTeX entry. -->
-    <pre class="bib placeholder" id="bib">@inproceedings{thinkworld,
-  title     = {ThinkWorld: World Imagination Reinforces Chain-of-Dynamics Reasoning},
-  author    = {Kim, Chaehyun and Huang, Chi-Pin and Kim, Jisoo and Chen, Min-Hung and Wang, Yu-Chiang Frank and Kim, Seungryong and Yang, Fu-En},
-  booktitle = {TBD},
-  year      = {TBD}
+    <pre class="bib" id="bib">@article{kim2026thinkworld,
+  title   = {ThinkWorld: World Imagination Reinforces Chain-of-Dynamics Reasoning},
+  author  = {Kim, Chaehyun and Huang, Chi-Pin and Kim, Jisoo and Chen, Min-Hung and Wang, Yu-Chiang Frank and Kim, Seungryong and Yang, Fu-En},
+  journal = {arXiv preprint arXiv:2610.37666},
+  year    = {2026}
 }</pre>
   </div>
 </section>

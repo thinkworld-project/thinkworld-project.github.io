@@ -149,6 +149,7 @@ sub, sup { line-height: 0; }
 }
 .btn:hover { background: var(--accent); color: var(--on-accent); text-decoration: none; transform: translateY(-1px); }
 .btn svg { width: 17px; height: 17px; }
+.btn .ai { font-size: 17px; line-height: 1; }
 .btn.soon { background: var(--panel-2); color: var(--muted); cursor: default; }
 .btn.soon:hover { transform: none; background: var(--panel-2); }
 .btn.soon::after { content: "soon"; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; opacity: .8; }
