@@ -184,6 +184,26 @@ sub, sup { line-height: 0; }
 }
 .video-placeholder strong { color: #fff; font-size: 19px; }
 .video-placeholder code { font: 13px var(--mono); color: #b6ed77; }
+/* teaser loading overlay (over the poster) until the video can play through */
+.video-loading {
+  position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6%;
+  background: rgba(10, 12, 9, .35); transition: opacity .5s ease;
+}
+.video-loading.done { opacity: 0; pointer-events: none; }
+.video-loading .card {
+  display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 12px; border-radius: 12px;
+  background: rgba(12, 15, 11, .82); border: 1px solid rgba(255, 255, 255, .1); color: #e4e8df; backdrop-filter: blur(6px);
+}
+.video-loading .txt { display: flex; flex-direction: column; gap: 7px; min-width: 150px; }
+.video-loading .msg { font-size: 13.5px; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.video-loading .spin {
+  flex: none; width: 26px; height: 26px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, .2); border-top-color: #b6ed77;
+  animation: vspin .9s linear infinite;
+}
+.video-loading .vbar { height: 4px; border-radius: 99px; background: rgba(255, 255, 255, .18); overflow: hidden; }
+.video-loading .vbar i { display: block; height: 100%; width: 0; background: #b6ed77; transition: width .3s ease; }
+.video-loading.err .spin, .video-loading.err .vbar { display: none; }
+@keyframes vspin { to { transform: rotate(360deg); } }
 
 .tldr {
   max-width: 900px; margin: 34px auto 0; font-size: 18.5px; line-height: 1.6; color: var(--ink-2);

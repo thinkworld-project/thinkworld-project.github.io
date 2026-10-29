@@ -104,14 +104,48 @@
   }, { rootMargin: '0px 0px -8% 0px' });
   $$('.reveal').forEach((e) => revIO.observe(e));
 
-  /* ---------------------------------------------------------------- teaser video (placeholder until file exists) */
+  /* ---------------------------------------------------------------- teaser video (loading overlay, then autoplay) */
   (function teaser() {
+    // Show a loading overlay (spinner + buffered progress) over the poster, and start playback only
+    // once the browser can play the video through. Also handles the video having loaded before this
+    // script ran (cached file), which previously left the placeholder up until a reload.
     const v = $('#teaser-video');
-    const ph = $('#teaser-placeholder');
-    const show = () => { ph.style.display = 'none'; v.style.visibility = 'visible'; };
-    v.style.visibility = 'hidden';
-    v.addEventListener('loadeddata', show);
-    v.querySelector('source').addEventListener('error', () => { v.removeAttribute('autoplay'); });
+    const box = $('#teaser-loading');
+    if (!v || !box) return;
+    const bar = box.querySelector('.vbar i');
+    const msg = box.querySelector('.msg');
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      bar.style.width = '100%';
+      box.classList.add('done');
+      const p = v.play();
+      if (p && p.catch) p.catch(() => { v.controls = true; });   // autoplay blocked: let the viewer press play
+    };
+    const progress = () => {
+      if (started || !v.duration || !v.buffered.length) return;
+      const f = Math.min(1, v.buffered.end(v.buffered.length - 1) / v.duration);
+      bar.style.width = Math.round(f * 100) + '%';
+      msg.textContent = `Loading video… ${Math.round(f * 100)}%`;
+      if (f > 0.995) start();
+    };
+    const fail = () => {
+      if (started) return;
+      box.classList.add('err');
+      msg.textContent = 'The video could not be loaded.';
+    };
+    v.addEventListener('progress', progress);
+    v.addEventListener('loadedmetadata', progress);
+    v.addEventListener('canplaythrough', start);
+    v.addEventListener('error', fail);
+    v.querySelector('source').addEventListener('error', fail);
+    // The browser stopped fetching before the whole file is buffered (data saver, mobile Safari):
+    // waiting longer would not help, so start streaming.
+    v.addEventListener('suspend', () => { if (!started && v.readyState >= 2 && v.readyState < 4) start(); });
+    if (v.readyState >= 4) start(); else progress();        // events that fired before this script ran
+    // last resort: play() also makes browsers that do not preload at all fetch the video
+    setTimeout(() => { if (!started && !box.classList.contains('err')) start(); }, 15000);
   })();
 
   /* ---------------------------------------------------------------- data mosaic */

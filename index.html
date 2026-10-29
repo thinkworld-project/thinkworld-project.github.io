@@ -83,17 +83,18 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>BibTeX</a>
     </div>
 
-    <!-- Teaser video. Drop the final cut at static/videos/teaser.mp4 and it plays automatically;
-         until then the placeholder below is shown. -->
+    <!-- Teaser video (static/videos/teaser.mp4, poster = its title frame, static/videos/teaser.webp).
+         A loading overlay with a progress bar is shown until the browser can play it through. -->
     <div class="teaser-video">
       <div class="video-frame" id="teaser-frame">
-        <video id="teaser-video" autoplay muted loop playsinline preload="metadata">
+        <video id="teaser-video" muted loop playsinline preload="auto" poster="static/videos/teaser.webp">
           <source src="static/videos/teaser.mp4" type="video/mp4">
         </video>
-        <div class="video-placeholder" id="teaser-placeholder">
-          <div class="play"></div>
-          <strong>Teaser video coming soon</strong>
-          <code>static/videos/teaser.mp4</code>
+        <div class="video-loading" id="teaser-loading" role="status" aria-live="polite">
+          <div class="card">
+            <div class="spin" aria-hidden="true"></div>
+            <div class="txt"><span class="msg">Loading video…</span><div class="vbar" aria-hidden="true"><i></i></div></div>
+          </div>
         </div>
       </div>
     </div>

@@ -22,7 +22,7 @@ Search for `TODO(R4)` in `index.html`. Placeholder blocks have a dashed yellow o
 | Authors and affiliations | `index.html`, `.authors` / `.affils` |
 | Paper, arXiv, Code and Model links | `index.html`, `.links`. Set `href` and remove the `soon` class. |
 | BibTeX | `index.html`, `#bib` |
-| Teaser video | Drop the file at `static/videos/teaser.mp4`. It replaces the placeholder automatically. Use H.264, ideally under 20 MB, encoded with `-movflags +faststart`. |
+| Teaser video | Replace `static/videos/teaser.mp4` (H.264, ideally under 20 MB, `-movflags +faststart`). A loading overlay with a progress bar is shown over the poster (`static/videos/teaser.webp`, the title frame) until the browser can play it through. If the title frame changes, refresh the poster: `ffmpeg -ss 4 -i static/videos/teaser.mp4 -frames:v 1 -vf scale=1280:-2 static/videos/teaser.webp`. |
 
 ## Fonts and colors
 
